@@ -1,5 +1,5 @@
 import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
-import {DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb";
+import {DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({
     endpoint: 'http://dynamodb:8000/',
@@ -20,43 +20,65 @@ export const getItemsInRoom = async (roomId: string) => {
     return await docClient.send(command);
 }
 
-export const getItemInRoomAndPlayer = async (roomId: string, playerTimestamp: string) => {
+export const getItemInRoomAndUser = async (roomId: string, userId: string) => {
     const command = new GetCommand({
         TableName: 'PlanningPoker',
         Key: {
             roomId: roomId,
-            playerTimestamp: playerTimestamp
+            userId: userId
         }
     });
     return await docClient.send(command);
 }
 
-export const putItemInRoomAndPlayer = async (roomId: string, playerName: string, playerTimestamp: string, cardNumber: string | null) => {
-    console.log(roomId);
-    console.log(playerName);
-    console.log(cardNumber);
+export const putItemInRoomAndUser = async (roomId: string, userName: string, userId: string, cardNumber: string | null) => {
     const command = new PutCommand({
         TableName: 'PlanningPoker',
         Item: {
             roomId: roomId,
-            playerTimestamp: playerTimestamp,
-            playerId: playerName,
-            cardNumber: cardNumber? cardNumber: "",
+            userId: userId,
+            userName: userName,
+            cardNumber: cardNumber ? cardNumber : "",
         }
-    })
+    });
     return await docClient.send(command);
 }
 
-export const updateItemInRoomAndPlayer = async (roomId: string, playerTimestamp: string, cardNumber: string) => {
+export const deleteUserInRoom = async (roomId: string, userId: string) => {
+    const command = new DeleteCommand({
+        TableName: 'PlanningPoker',
+        Key: {
+            roomId: roomId,
+            userId: userId,
+        }
+    });
+    return await docClient.send(command);
+}
+
+export const updateCardNumberInRoomAndUser = async (roomId: string, userId: string, cardNumber: string | null) => {
     const command = new UpdateCommand({
         TableName: 'PlanningPoker',
         Key: {
             roomId: roomId,
-            playerTimestamp: playerTimestamp
+            userId: userId
         },
         UpdateExpression: "set cardNumber = :c",
         ExpressionAttributeValues: {
-            ":c": cardNumber
+            ":c": cardNumber ? cardNumber : "",
+        }
+    });
+    return await docClient.send(command);
+}
+
+export const updateAllCardNumberInRoom = async (roomId: string, cardNumber: string | null) => {
+    const command = new UpdateCommand({
+        TableName: 'PlanningPoker',
+        Key: {
+            roomId: roomId,
+        },
+        UpdateExpression: "set cardNumber = :c",
+        ExpressionAttributeValues: {
+            ":c": cardNumber ? cardNumber : "",
         }
     });
     return await docClient.send(command);
