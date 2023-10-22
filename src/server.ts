@@ -20,27 +20,34 @@ const roomClients: Map<string, Set<WebSocket>> = new Map();
 
 wss.on('connection', async (ws) => {
     console.log('Client connected');
+    let roomId = '';
+    let userId = '';
 
     ws.on('message', async (rawData) => {
-        ws.on('close', () => {
-            deleteUserInRoom(message.roomId, message.userId);
-            roomClients.get(message.roomId)?.delete(ws);
-            multicastData(message.roomId);
-        });
         console.log(`Received message: ${rawData}`);
         const message = JSON.parse(rawData.toString());
+        roomId = message.roomId;
+        userId = message.userId;
 
-        if (!roomClients.has(message.roomId)) {
-            roomClients.set(message.roomId, new Set());
+        if (!roomClients.has(roomId)) {
+            roomClients.set(roomId, new Set());
         }
-        roomClients.get(message.roomId)?.add(ws);
+        roomClients.get(roomId)?.add(ws);
 
         if (message.operation === 'RESET') {
-            await resetRoom(message.roomId);
+            await resetRoom(roomId);
         }
         if (message.operation === 'SUBMIT') {
-            await submitCard(message);
+            await submitCard(message, roomId, userId);
         }
+    });
+
+    ws.on('close', async () => {
+        console.log('Client disconnected');
+        if (!roomId || !userId) return;
+        await deleteUserInRoom(roomId, userId);
+        roomClients.get(roomId)?.delete(ws);
+        await multicastData(roomId);
     });
 });
 
@@ -48,19 +55,20 @@ const resetRoom = async (roomId: string) => {
     await updateAllCardNumberInRoom(roomId, '');
     await multicastData(roomId);
 }
-const submitCard = async (message: any) => {
-    const existingUser = await getItemInRoomAndUser(message.roomId, message.userId);
+const submitCard = async (message: any, roomId: string, userId: string) => {
+    const existingUser = await getItemInRoomAndUser(roomId, userId);
     if (existingUser.Item) {
         console.log('Player already exists');
-        await updateCardNumberInRoomAndUser(message.roomId, message.userId, message.cardNumber);
+        await updateCardNumberInRoomAndUser(roomId, userId, message.cardNumber);
     } else {
         console.log('Player does not exist');
-        await putItemInRoomAndUser(message.roomId, message.userName, message.userId, message.cardNumber);
+        await putItemInRoomAndUser(roomId, message.userName, userId, message.cardNumber);
     }
-    await multicastData(message.roomId);
+    await multicastData(roomId);
 }
 const multicastData = async (roomId: string) => {
     const data = await getItemsInRoom(roomId);
+    console.log(`Multicasting data: ${JSON.stringify(data.Items)}`);
     roomClients.get(roomId)?.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(data.Items));
