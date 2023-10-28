@@ -8,8 +8,9 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
         const body = JSON.parse(event.body ?? '{}');
         await planningPokerRepository.updateAllCardNumberInRoom(body.roomId, null);
         const {domainName, stage} = event.requestContext;
-        await new NotificationService(`${domainName}/${stage}`).notifyCurrentUsers(body.roomId);
+        await new NotificationService(`${domainName}/${stage}`).notifyCurrentUsers(body.roomId, true);
     } catch (e) {
+        console.error(e);
         return {
             statusCode: 400,
             body: 'Cannot reset room.'

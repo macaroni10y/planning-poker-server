@@ -13,11 +13,7 @@ class PlanningPokerRepository {
     private docClient: DynamoDBDocumentClient;
 
     constructor() {
-        const client = new DynamoDBClient({
-            endpoint: 'http://dynamodb:8000/',
-            region: 'ap-northeast-1',
-            credentials: {accessKeyId: 'FAKE', secretAccessKey: 'FAKE'},
-        });
+        const client = new DynamoDBClient();
         this.docClient = DynamoDBDocumentClient.from(client);
     }
 
@@ -39,18 +35,20 @@ class PlanningPokerRepository {
     }
 
     findUserById = async (clientId: string): Promise<User | undefined> => {
-        const command = new GetCommand({
+        const command = new QueryCommand({
             TableName: 'PlanningPoker',
-            Key: {
-                clientId
+            IndexName: 'ClientIdIndex',
+            KeyConditionExpression: "clientId = :value",
+            ExpressionAttributeValues: {
+                ":value": clientId
             }
         });
         const output = await this.docClient.send(command);
-        return output.Item ? {
-            roomId: output.Item.roomId,
-            clientId: output.Item.clientId,
-            name: output.Item.userName,
-            cardNumber: output.Item.cardNumber
+        return output.Items && output.Items.length !== 0 ? {
+            roomId: output.Items[0].roomId,
+            clientId: output.Items[0].clientId,
+            name: output.Items[0].userName,
+            cardNumber: output.Items[0].cardNumber
         } : undefined;
     }
 
@@ -67,10 +65,11 @@ class PlanningPokerRepository {
         await this.docClient.send(command);
     }
 
-    deleteUser = async (clientId: string): Promise<void> => {
+    deleteUser = async (roomId: string, clientId: string): Promise<void> => {
         const command = new DeleteCommand({
             TableName: 'PlanningPoker',
             Key: {
+                roomId,
                 clientId
             }
         });

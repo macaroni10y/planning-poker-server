@@ -9,12 +9,13 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
         await planningPokerRepository.registerUser({
             clientId: event.requestContext.connectionId,
             roomId: body.roomId,
-            name: body.username,
+            name: body.userName,
             cardNumber: null,
         });
         const {domainName, stage} = event.requestContext;
         await new NotificationService(`${domainName}/${stage}`).notifyCurrentUsers(body.roomId);
     } catch (e) {
+        console.error(e);
         return {
             statusCode: 400,
             body: 'Cannot join room.'
