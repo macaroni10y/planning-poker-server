@@ -1,7 +1,7 @@
 
 import { APIGatewayProxyWebsocketHandlerV2 } from 'aws-lambda';
-import PlanningPokerRepository, {User} from "../repository/PlanningPokerRepository";
-import {sendMessageToClient} from "../common/webSocketSender";
+import PlanningPokerRepository, {User} from "../../repository/PlanningPokerRepository";
+import {sendMessageToClient} from "../../service/webSocketSender";
 
 const repository = new PlanningPokerRepository();
 export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
