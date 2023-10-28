@@ -2,7 +2,7 @@ import {Construct} from 'constructs';
 import {NodejsFunction} from "aws-cdk-lib/aws-lambda-nodejs";
 import {WebSocketApi, WebSocketStage} from "@aws-cdk/aws-apigatewayv2-alpha";
 import {WebSocketLambdaIntegration} from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
-import {Stack, StackProps} from "aws-cdk-lib";
+import {RemovalPolicy, Stack, StackProps} from "aws-cdk-lib";
 import * as path from "path";
 import {AttributeType, BillingMode, Table} from "aws-cdk-lib/aws-dynamodb";
 
@@ -16,8 +16,8 @@ export class PlanningPokerServerStack extends Stack {
                 functionName: name,
             });
 
-        const [onConnect, onMessage, onDisconnect, defaultFunc]
-            = ['onConnect', 'onMessage', 'onDisconnect', 'default']
+        const [onConnect, resetRoomFunc, onDisconnect, defaultFunc]
+            = ['onConnect', 'resetRoomFunc', 'onDisconnect', 'default']
             .map(nameToFunction);
 
         const api = new WebSocketApi(this, 'api', {
@@ -33,13 +33,13 @@ export class PlanningPokerServerStack extends Stack {
             },
         });
 
-        api.addRoute('sendMessage', {
-            integration: new WebSocketLambdaIntegration('messageIntegration', onMessage),
+        api.addRoute('resetRoom', {
+            integration: new WebSocketLambdaIntegration('resetRoomIntegration', resetRoomFunc),
         });
         api.grantManageConnections(onConnect);
         api.grantManageConnections(onDisconnect);
         api.grantManageConnections(defaultFunc);
-        api.grantManageConnections(onMessage);
+        api.grantManageConnections(resetRoomFunc);
 
         new WebSocketStage(this, 'planningPokerServerStage', {
             stageName: 'v1',
@@ -48,6 +48,7 @@ export class PlanningPokerServerStack extends Stack {
         });
 
         const table = new Table(this, 'planningPokerTable', {
+            tableName: 'PlanningPoker',
             billingMode: BillingMode.PAY_PER_REQUEST,
             partitionKey: {name: 'roomId', type: AttributeType.STRING},
             sortKey: {name: 'clientId', type: AttributeType.STRING},
@@ -59,6 +60,6 @@ export class PlanningPokerServerStack extends Stack {
         table.grantFullAccess(onConnect);
         table.grantFullAccess(onDisconnect);
         table.grantFullAccess(defaultFunc);
-        table.grantFullAccess(onMessage);
+        table.grantFullAccess(resetRoomFunc);
     }
 }
