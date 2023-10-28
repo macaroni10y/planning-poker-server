@@ -1,13 +1,12 @@
-import * as cdk from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import {NodejsFunction} from "aws-cdk-lib/aws-lambda-nodejs";
 import {WebSocketApi, WebSocketStage} from "@aws-cdk/aws-apigatewayv2-alpha";
 import {WebSocketLambdaIntegration} from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
+import {Stack, StackProps} from "aws-cdk-lib";
 
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
 
-export class CdkStack extends cdk.Stack {
-    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+export class PlanningPokerServerStack extends Stack {
+    constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
         const onConnect = new NodejsFunction(this, 'onConnect', {
