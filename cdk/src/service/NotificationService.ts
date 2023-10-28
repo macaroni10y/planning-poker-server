@@ -12,14 +12,14 @@ export class NotificationService {
         });
     }
 
-    async notifyCurrentUsers(roomId: string) {
+    async notifyCurrentUsers(roomId: string, shouldReset: boolean = false) {
         try {
             const users = await planningPokerRepository.findUsersInRoom(roomId);
             await Promise.all(
                 users.map(user =>
                     this.apiGwManagementApi.postToConnection({
                         ConnectionId: user.clientId,
-                        Data: JSON.stringify(users),
+                        Data: JSON.stringify({shouldReset, users}),
                     }).promise())
             );
         } catch (e) {

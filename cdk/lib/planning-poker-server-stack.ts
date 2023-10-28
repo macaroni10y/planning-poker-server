@@ -2,7 +2,7 @@ import {Construct} from 'constructs';
 import {NodejsFunction} from "aws-cdk-lib/aws-lambda-nodejs";
 import {WebSocketApi, WebSocketStage} from "@aws-cdk/aws-apigatewayv2-alpha";
 import {WebSocketLambdaIntegration} from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
-import {RemovalPolicy, Stack, StackProps} from "aws-cdk-lib";
+import {Stack, StackProps} from "aws-cdk-lib";
 import * as path from "path";
 import {AttributeType, BillingMode, Table} from "aws-cdk-lib/aws-dynamodb";
 
@@ -12,12 +12,12 @@ export class PlanningPokerServerStack extends Stack {
 
         const nameToFunction = (name: string) =>
             new NodejsFunction(this, name, {
-                entry: path.join(__dirname, `../functions/${name}/index.ts`),
+                entry: path.join(__dirname, `../src/functions/${name}/index.ts`),
                 functionName: name,
             });
 
-        const [onConnect, resetRoomFunc, onDisconnect, defaultFunc]
-            = ['onConnect', 'resetRoomFunc', 'onDisconnect', 'default']
+        const [onConnect, joinRoom, resetRoom, submitCard, onDisconnect, defaultFunc]: NodejsFunction[]
+            = ['onConnect', 'joinRoom', 'resetRoom', 'submitCard', 'onDisconnect', 'default']
             .map(nameToFunction);
 
         const api = new WebSocketApi(this, 'api', {
@@ -33,13 +33,21 @@ export class PlanningPokerServerStack extends Stack {
             },
         });
 
+        api.addRoute('joinRoom', {
+            integration: new WebSocketLambdaIntegration('joinRoomIntegration', joinRoom),
+        });
         api.addRoute('resetRoom', {
-            integration: new WebSocketLambdaIntegration('resetRoomIntegration', resetRoomFunc),
+            integration: new WebSocketLambdaIntegration('resetRoomIntegration', resetRoom),
+        });
+        api.addRoute('submitCard', {
+            integration: new WebSocketLambdaIntegration('submitCardIntegration', submitCard)
         });
         api.grantManageConnections(onConnect);
+        api.grantManageConnections(joinRoom);
+        api.grantManageConnections(submitCard);
         api.grantManageConnections(onDisconnect);
         api.grantManageConnections(defaultFunc);
-        api.grantManageConnections(resetRoomFunc);
+        api.grantManageConnections(resetRoom);
 
         new WebSocketStage(this, 'planningPokerServerStage', {
             stageName: 'v1',
@@ -58,8 +66,11 @@ export class PlanningPokerServerStack extends Stack {
             partitionKey: {name: 'clientId', type: AttributeType.STRING},
         });
         table.grantFullAccess(onConnect);
+        table.grantFullAccess(joinRoom);
+        table.grantFullAccess(submitCard);
         table.grantFullAccess(onDisconnect);
         table.grantFullAccess(defaultFunc);
-        table.grantFullAccess(resetRoomFunc);
+        table.grantFullAccess(resetRoom);
+
     }
 }
