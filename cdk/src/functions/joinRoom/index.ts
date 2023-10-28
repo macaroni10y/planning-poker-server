@@ -1,15 +1,26 @@
+import {APIGatewayProxyWebsocketHandlerV2} from 'aws-lambda';
+import {planningPokerRepository} from "../../repository/PlanningPokerRepository";
+import {NotificationService} from "../../service/NotificationService";
 
-import { APIGatewayProxyWebsocketHandlerV2 } from 'aws-lambda';
-import PlanningPokerRepository from "../../repository/PlanningPokerRepository";
-const repository = new PlanningPokerRepository();
-export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event: any) => {
-    await repository.registerUser({
-        clientId: event.requestContext.connectionId,
-        roomId: event.body.roomId,
-        name: event.body.username,
-        cardNumber: null,
-    });
+export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
+    try {
+        const body = JSON.parse(event.body ?? '{}');
+        await planningPokerRepository.registerUser({
+            clientId: event.requestContext.connectionId,
+            roomId: body.roomId,
+            name: body.username,
+            cardNumber: null,
+        });
+        const {domainName, stage} = event.requestContext;
+        await new NotificationService(`${domainName}/${stage}`).notifyCurrentUsers(body.roomId);
+    } catch (e) {
+        return {
+            statusCode: 400,
+            body: 'Cannot join room.'
+        }
+    }
+
     return {
         statusCode: 200,
         body: 'Hello from connection!',

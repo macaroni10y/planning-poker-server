@@ -38,24 +38,23 @@ class PlanningPokerRepository {
         })) ?? [];
     }
 
-    findUserInRoomById = async (roomId: string, clientId: string): Promise<User | undefined> => {
+    findUserById = async (clientId: string): Promise<User | undefined> => {
         const command = new GetCommand({
             TableName: 'PlanningPoker',
             Key: {
-                roomId,
                 clientId
             }
         });
         const output = await this.docClient.send(command);
-        return output.Item? {
+        return output.Item ? {
             roomId: output.Item.roomId,
             clientId: output.Item.clientId,
             name: output.Item.userName,
             cardNumber: output.Item.cardNumber
-        }: {} as User;
+        } : undefined;
     }
 
-    registerUser = async (user: User) => {
+    registerUser = async (user: User): Promise<void> => {
         const command = new PutCommand({
             TableName: 'PlanningPoker',
             Item: {
@@ -65,20 +64,20 @@ class PlanningPokerRepository {
                 cardNumber: user.cardNumber ? user.cardNumber : "",
             }
         });
-        return await this.docClient.send(command);
+        await this.docClient.send(command);
     }
 
-    deleteUser = async (clientId: string) => {
+    deleteUser = async (clientId: string): Promise<void> => {
         const command = new DeleteCommand({
             TableName: 'PlanningPoker',
             Key: {
                 clientId
             }
         });
-        return await this.docClient.send(command);
+        await this.docClient.send(command);
     }
 
-    updateCardNumberInRoomAndUser = async (roomId: string, clientId: string, cardNumber: string | null) => {
+    updateCardNumberInRoomAndUser = async (roomId: string, clientId: string, cardNumber: string | null): Promise<void> => {
         const command = new UpdateCommand({
             TableName: 'PlanningPoker',
             Key: {
@@ -90,7 +89,7 @@ class PlanningPokerRepository {
                 ":c": cardNumber ? cardNumber : "",
             }
         });
-        return await this.docClient.send(command);
+        await this.docClient.send(command);
     }
 
     updateAllCardNumberInRoom = async (roomId: string, cardNumber: string | null): Promise<void> => {
@@ -103,5 +102,5 @@ class PlanningPokerRepository {
     }
 }
 
-export default PlanningPokerRepository;
+export const planningPokerRepository = new PlanningPokerRepository();
 export type {User};

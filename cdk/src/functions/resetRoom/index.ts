@@ -1,18 +1,22 @@
+import {APIGatewayProxyWebsocketHandlerV2} from 'aws-lambda';
+import {planningPokerRepository} from "../../repository/PlanningPokerRepository";
+import {NotificationService} from "../../service/NotificationService";
 
-import { APIGatewayProxyWebsocketHandlerV2 } from 'aws-lambda';
-import PlanningPokerRepository, {User} from "../../repository/PlanningPokerRepository";
-import {sendMessageToClient} from "../../service/webSocketSender";
-
-const repository = new PlanningPokerRepository();
 export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
-    const user: User = JSON.parse(event.body ?? "{}");
-    await repository.updateAllCardNumberInRoom(user.roomId, null);
-    const endpoint = event.requestContext.domainName + '/' + event.requestContext.stage;
-    const data = await repository.findUsersInRoom(user.roomId);
-    await sendMessageToClient(endpoint, event.requestContext.connectionId, JSON.stringify(data));
+    try {
+        const body = JSON.parse(event.body ?? '{}');
+        await planningPokerRepository.updateAllCardNumberInRoom(body.roomId, null);
+        const {domainName, stage} = event.requestContext;
+        await new NotificationService(`${domainName}/${stage}`).notifyCurrentUsers(body.roomId);
+    } catch (e) {
+        return {
+            statusCode: 400,
+            body: 'Cannot reset room.'
+        }
+    }
     return {
         statusCode: 200,
-        body: 'Hello from resetRoom!',
+        body: 'succeeded to reset room.',
     };
 }
