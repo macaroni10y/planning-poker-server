@@ -3,14 +3,25 @@ import {planningPokerRepository} from "../../../src/repository/PlanningPokerRepo
 import {NotificationService} from "../../../src/service/NotificationService";
 
 describe('joinRoom', () => {
+    let registerUserSpy: jest.SpyInstance;
+    let notifyMock: jest.SpyInstance;
+    beforeEach(() => {
+        registerUserSpy = jest.spyOn(planningPokerRepository, 'registerUser');
+        notifyMock = jest.spyOn(NotificationService.prototype, 'notifyCurrentUsers');
+    });
+
+    afterEach(() => {
+        registerUserSpy.mockRestore();
+        notifyMock.mockRestore();
+    });
     it('should join successfully', async () => {
         // given
         const body = {
             roomId: '__room_id__',
             userName: '__user_name__',
         };
-        const registerUserSpy = jest.spyOn(planningPokerRepository, 'registerUser').mockResolvedValue();
-        const notifyMock = jest.spyOn(NotificationService.prototype, 'notifyCurrentUsers').mockResolvedValue();
+        registerUserSpy.mockResolvedValue(undefined);
+        notifyMock.mockResolvedValue(undefined);
 
         // when
         await joinRoom(body, '__client_id__', '__domain_name__', '__stage__');
@@ -24,10 +35,6 @@ describe('joinRoom', () => {
                 cardNumber: null,
             });
         expect(notifyMock).toHaveBeenCalledWith('__room_id__');
-
-        // teardown
-        registerUserSpy.mockRestore();
-        notifyMock.mockRestore();
     });
     it('should occur error when the body is invalid', async () => {
         // given
@@ -35,16 +42,12 @@ describe('joinRoom', () => {
             hoge: '__hoge__',
             fuga: '__fuga__',
         };
-        const registerUserSpy = jest.spyOn(planningPokerRepository, 'registerUser').mockRejectedValue(new Error('test error'));
-        const notifyMock = jest.spyOn(NotificationService.prototype, 'notifyCurrentUsers');
+        registerUserSpy.mockRejectedValue(new Error('test error'));
+        notifyMock.mockResolvedValue(undefined);
 
         // when
         const promise = joinRoom(body, '__client_id__', '__domain_name__', '__stage__');
         await expect(promise).rejects.toThrow();
-
-        // teardown
-        registerUserSpy.mockRestore();
-        notifyMock.mockRestore();
     });
     it('should occur error when notification failed', async () => {
         // given
@@ -52,16 +55,11 @@ describe('joinRoom', () => {
             roomId: '__room_id__',
             userName: '__user_name__',
         };
-        const registerUserSpy = jest.spyOn(planningPokerRepository, 'registerUser').mockResolvedValue();
-        const notifyMock = jest.spyOn(NotificationService.prototype, 'notifyCurrentUsers').mockRejectedValue(new Error('test error'));
+        registerUserSpy.mockResolvedValue(undefined);
+        notifyMock.mockRejectedValue(new Error('test error'));
 
         // when
         const promise = joinRoom(body, '__client_id__', '__domain_name__', '__stage__');
         await expect(promise).rejects.toThrow();
-
-        // teardown
-        registerUserSpy.mockRestore();
-        notifyMock.mockRestore();
     });
-
 });
