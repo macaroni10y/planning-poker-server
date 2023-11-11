@@ -7,6 +7,7 @@ import * as path from 'path';
 import {AttributeType, BillingMode, Table} from 'aws-cdk-lib/aws-dynamodb';
 
 export class PlanningPokerServerStack extends Stack {
+    public readonly table: Table;
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
@@ -27,9 +28,9 @@ export class PlanningPokerServerStack extends Stack {
             autoDeploy: true,
         });
 
-        const table = this.createDynamoDBTable();
+        this.table = this.createDynamoDBTable();
 
-        this.grantTablePermissions(table, functions);
+        this.grantTablePermissions(this.table, functions);
     }
 
     private createLambdaFunction = (name: string): NodejsFunction => new NodejsFunction(this, name, {
