@@ -8,7 +8,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "cdklocal": "cdklocal"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.125",
@@ -24,6 +25,7 @@
     "@aws-cdk/aws-apigatewayv2-alpha": "^2.102.0-alpha.0",
     "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.102.0-alpha.0",
     "aws-cdk-lib": "2.102.0",
+    "aws-cdk-local": "^2.18.0",
     "aws-lambda": "^1.0.7",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
