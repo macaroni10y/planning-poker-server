@@ -14,8 +14,6 @@ services:
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
     ports:
       - "8000:8000"
-    volumes:
-      - "./dynamodb:/data"
   dynamodb-admin:
     image: "aaronshaf/dynamodb-admin:latest"
     environment:

@@ -1,5 +1,5 @@
 import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
-import {DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb";
+import {DeleteCommand, DynamoDBDocumentClient, PutCommand, QueryCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb";
 
 
 interface User {
@@ -13,7 +13,11 @@ class PlanningPokerRepository {
     private docClient: DynamoDBDocumentClient;
 
     constructor() {
-        const client = new DynamoDBClient();
+        const dynamoDBOptions = process.env.AWS_SAM_LOCAL === 'true' ? {
+            endpoint: 'http://dynamodb:8000',
+            region: 'ap-northeast-1',
+        } : {};
+        const client = new DynamoDBClient(dynamoDBOptions);
         this.docClient = DynamoDBDocumentClient.from(client);
     }
 
