@@ -18,6 +18,7 @@ export class PlanningPokerServerStack extends Stack {
             'submitCard',
             'onDisconnect',
             'default',
+            'revealAllCards'
         ]);
 
         const api = this.createWebSocketApi(functions);
@@ -57,6 +58,7 @@ export class PlanningPokerServerStack extends Stack {
             {route: 'resetRoom', func: 'resetRoom'},
             {route: 'submitCard', func: 'submitCard'},
             {route: '$default', func: 'default'},
+            {route: 'revealAllCards', func: 'revealAllCards'},
         ];
 
         routes.forEach(({route, func}) => {
