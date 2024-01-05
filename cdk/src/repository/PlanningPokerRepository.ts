@@ -63,7 +63,7 @@ class PlanningPokerRepository {
                 roomId: user.roomId,
                 clientId: user.clientId,
                 userName: user.name,
-                cardNumber: user.cardNumber ? user.cardNumber : "",
+                cardNumber: user.cardNumber ? user.cardNumber : "not yet",
             }
         });
         await this.docClient.send(command);
@@ -89,7 +89,7 @@ class PlanningPokerRepository {
             },
             UpdateExpression: "set cardNumber = :c",
             ExpressionAttributeValues: {
-                ":c": cardNumber ? cardNumber : "",
+                ":c": cardNumber ? cardNumber : "not yet",
             }
         });
         await this.docClient.send(command);

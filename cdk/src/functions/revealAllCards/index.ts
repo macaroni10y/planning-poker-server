@@ -30,7 +30,7 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
 export const revealAllCards = async (body: any) => {
     const users = await planningPokerRepository.findUsersInRoom(body.roomId);
     const updatePromises = users
-        .filter(user => !user.cardNumber)
+        .filter(user => user.cardNumber === 'not yet')
         .map(user => planningPokerRepository.updateCardNumberInRoomAndUser(user.roomId, user.clientId, 'skip'));
     await Promise.all(updatePromises);
 }
