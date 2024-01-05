@@ -24,7 +24,7 @@ export const joinRoom = async (body: any, clientId: string, domainName: string, 
         clientId: clientId,
         roomId: body.roomId,
         name: body.userName,
-        cardNumber: null,
+        cardNumber: "not yet",
     });
     await new NotificationService(`${domainName}/${stage}`).notifyCurrentUsers(body.roomId);
 }
