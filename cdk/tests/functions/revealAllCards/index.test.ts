@@ -25,7 +25,7 @@ describe('revealAllCards', () => {
                 clientId: '__client_id_1__',
                 roomId: '__room_id__',
                 name: '__user_name_1__',
-                cardNumber: null,
+                cardNumber: 'not yet',
             },
             {
                 clientId: '__client_id_2__',
