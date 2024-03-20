@@ -32,7 +32,7 @@ describe('joinRoom', () => {
                 clientId: '__client_id__',
                 roomId: '__room_id__',
                 name: '__user_name__',
-                cardNumber: null,
+                cardNumber: 'not yet',
             });
         expect(notifyMock).toHaveBeenCalledWith('__room_id__');
     });

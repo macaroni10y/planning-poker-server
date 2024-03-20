@@ -5,9 +5,11 @@ import {WebSocketLambdaIntegration} from '@aws-cdk/aws-apigatewayv2-integrations
 import {Stack, StackProps} from 'aws-cdk-lib';
 import * as path from 'path';
 import {AttributeType, BillingMode, Table} from 'aws-cdk-lib/aws-dynamodb';
+import {WebSocketLambdaAuthorizer} from "aws-cdk-lib/aws-apigatewayv2-authorizers";
 
 export class PlanningPokerServerStack extends Stack {
     public readonly table: Table;
+
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
@@ -47,12 +49,24 @@ export class PlanningPokerServerStack extends Stack {
     }
 
     private createWebSocketApi(functions: Record<string, NodejsFunction>): WebSocketApi {
+        const authorizerFunction = new NodejsFunction(this, 'authorizerFunction', {
+            entry: path.join(__dirname, `../src/functions/authorizer/index.ts`),
+            functionName: 'authorizer',
+        });
+        const authorizer = new WebSocketLambdaAuthorizer('Authorizer', authorizerFunction, {
+            identitySource: ['route.request.header.Origin'],
+        });
         const api = new WebSocketApi(this, 'api', {
             apiName: 'planningPokerServer',
+            connectRouteOptions: {
+                integration: new WebSocketLambdaIntegration('webSocketLambdaIntegration', functions['onConnect']),
+                authorizer: authorizer,
+            }
         });
+        api.grantManageConnections(authorizerFunction);
+        api.grantManageConnections(functions['onConnect']);
 
         const routes = [
-            {route: '$connect', func: 'onConnect'},
             {route: '$disconnect', func: 'onDisconnect'},
             {route: 'joinRoom', func: 'joinRoom'},
             {route: 'resetRoom', func: 'resetRoom'},
@@ -67,7 +81,6 @@ export class PlanningPokerServerStack extends Stack {
             });
             api.grantManageConnections(functions[func]);
         });
-
         return api;
     }
 
