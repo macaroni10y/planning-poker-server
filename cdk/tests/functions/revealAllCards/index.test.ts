@@ -1,5 +1,5 @@
 import {planningPokerRepository} from "../../../src/repository/PlanningPokerRepository";
-import {revealAllCards} from "../../../src/functions/revealAllCards";
+import {revealAllCards} from "../../../src/functions/default/revealAllCards";
 
 describe('revealAllCards', () => {
     let findUsersInRoomSpy: jest.SpyInstance;

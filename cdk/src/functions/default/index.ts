@@ -1,9 +1,9 @@
 import {APIGatewayProxyWebsocketHandlerV2} from 'aws-lambda';
-import {joinRoom} from "../joinRoom/index";
-import {submitCard} from "../submitCard/index";
-import {revealAllCards} from "../revealAllCards/index";
+import {joinRoom} from "./joinRoom";
+import {submitCard} from "./submitCard";
+import {revealAllCards} from "./revealAllCards";
 import {NotificationService} from "../../service/NotificationService";
-import {resetRoom} from "../resetRoom/index";
+import {resetRoom} from "./resetRoom";
 
 export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event: any) => {
     console.info('Received event:', JSON.stringify(event, null, 2));
