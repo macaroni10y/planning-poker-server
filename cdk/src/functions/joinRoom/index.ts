@@ -5,7 +5,7 @@ import {NotificationService} from "../../service/NotificationService";
 export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
     try {
-        await joinRoom(JSON.parse(event.body ?? '{}'), event.requestContext.connectionId, event.requestContext.domainName, event.requestContext.stage);
+        await joinRoom(JSON.parse(event.body ?? '{}'), event.requestContext.connectionId);
     } catch (e) {
         console.error(e);
         return {
@@ -19,12 +19,11 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
     };
 }
 
-export const joinRoom = async (body: any, clientId: string, domainName: string, stage: string) => {
+export const joinRoom = async (body: any, clientId: string) => {
     await planningPokerRepository.registerUser({
         clientId: clientId,
         roomId: body.roomId,
         name: body.userName,
         cardNumber: "not yet",
     });
-    await new NotificationService(`${domainName}/${stage}`).notifyCurrentUsers(body.roomId);
 }

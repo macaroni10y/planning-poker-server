@@ -6,9 +6,7 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
     try {
         const body = JSON.parse(event.body ?? '{}');
-        await planningPokerRepository.updateAllCardNumberInRoom(body.roomId, "not yet");
-        const {domainName, stage} = event.requestContext;
-        await new NotificationService(`${domainName}/${stage}`).notifyCurrentUsers(body.roomId, true);
+        await resetRoom(body);
     } catch (e) {
         console.error(e);
         return {
@@ -20,4 +18,8 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
         statusCode: 200,
         body: 'succeeded to reset room.',
     };
+}
+
+export const resetRoom = async (body: any) => {
+    await planningPokerRepository.updateAllCardNumberInRoom(body.roomId, "not yet");
 }
