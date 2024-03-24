@@ -1,11 +1,11 @@
 import {Construct} from 'constructs';
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
-import {WebSocketApi, WebSocketStage} from '@aws-cdk/aws-apigatewayv2-alpha';
-import {WebSocketLambdaIntegration} from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 import {Stack, StackProps} from 'aws-cdk-lib';
 import * as path from 'path';
 import {AttributeType, BillingMode, Table} from 'aws-cdk-lib/aws-dynamodb';
 import {WebSocketLambdaAuthorizer} from "aws-cdk-lib/aws-apigatewayv2-authorizers";
+import {WebSocketApi, WebSocketStage} from "aws-cdk-lib/aws-apigatewayv2";
+import {WebSocketLambdaIntegration} from "aws-cdk-lib/aws-apigatewayv2-integrations";
 
 export class PlanningPokerServerStack extends Stack {
     public readonly table: Table;
@@ -15,12 +15,7 @@ export class PlanningPokerServerStack extends Stack {
 
         const functions = this.createLambdaFunctions([
             'onConnect',
-            'joinRoom',
-            'resetRoom',
-            'submitCard',
-            'onDisconnect',
             'default',
-            'revealAllCards'
         ]);
 
         const api = this.createWebSocketApi(functions);
@@ -67,17 +62,16 @@ export class PlanningPokerServerStack extends Stack {
         api.grantManageConnections(functions['onConnect']);
 
         const routes = [
-            {route: '$disconnect', func: 'onDisconnect'},
-            {route: 'joinRoom', func: 'joinRoom'},
-            {route: 'resetRoom', func: 'resetRoom'},
-            {route: 'submitCard', func: 'submitCard'},
             {route: '$default', func: 'default'},
-            {route: 'revealAllCards', func: 'revealAllCards'},
+            {route: 'joinRoom', func: 'default'},
+            {route: 'submitCard', func: 'default'},
+            {route: 'revealAllCards', func: 'default'},
+            {route: 'resetRoom', func: 'default'},
         ];
 
         routes.forEach(({route, func}) => {
             api.addRoute(route, {
-                integration: new WebSocketLambdaIntegration(`${func}Integration`, functions[func])
+                integration: new WebSocketLambdaIntegration(`${func}Integration`, functions[func]),
             });
             api.grantManageConnections(functions[func]);
         });
