@@ -15,6 +15,7 @@ export class PlanningPokerServerStack extends Stack {
 
         const functions = this.createLambdaFunctions([
             'onConnect',
+            'onDisconnect',
             'default',
         ]);
 
@@ -67,6 +68,7 @@ export class PlanningPokerServerStack extends Stack {
             {route: 'submitCard', func: 'default'},
             {route: 'revealAllCards', func: 'default'},
             {route: 'resetRoom', func: 'default'},
+            {route: '$disconnect', func: 'onDisconnect'},
         ];
 
         routes.forEach(({route, func}) => {
