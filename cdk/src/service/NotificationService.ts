@@ -15,13 +15,17 @@ export class NotificationService {
     async notifyCurrentUsers(roomId: string, shouldReset: boolean = false) {
         try {
             const users = await planningPokerRepository.findUsersInRoom(roomId);
-            await Promise.all(
-                users.map(user =>
-                    this.apiGwManagementApi.postToConnection({
-                        ConnectionId: user.clientId,
-                        Data: JSON.stringify({shouldReset, users}),
-                    }).promise())
+            const promises = users.map(user =>
+                this.apiGwManagementApi.postToConnection({
+                    ConnectionId: user.clientId,
+                    Data: JSON.stringify({shouldReset, users}),
+                }).promise()
+                    .catch(async (error) => {
+                        console.error({message: `The connection is already gone, deleting ${user.clientId}`, error});
+                        await planningPokerRepository.deleteUser(roomId, user.clientId);
+                    })
             );
+            await Promise.allSettled(promises);
         } catch (e) {
             console.error('Error sending message to connection', e);
         }
