@@ -1,10 +1,11 @@
 import {planningPokerRepository} from "../../repository/PlanningPokerRepository";
+import {RevealAllCardsParams} from "../../types/actionParams";
 
 /**
  * set all card numbers to 'skip' for users who have not yet voted
  * @param body
  */
-export const revealAllCards = async (body: any) => {
+export const revealAllCards = async (body: RevealAllCardsParams) => {
     const users = await planningPokerRepository.findUsersInRoom(body.roomId);
     const updatePromises = users
         .filter(user => user.cardNumber === 'not yet')

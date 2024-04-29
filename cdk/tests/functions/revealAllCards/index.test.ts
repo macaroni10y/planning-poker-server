@@ -1,5 +1,6 @@
 import {planningPokerRepository} from "../../../src/repository/PlanningPokerRepository";
 import {revealAllCards} from "../../../src/functions/default/revealAllCards";
+import {RevealAllCardsParams} from "../../../src/types/actionParams";
 
 describe('revealAllCards', () => {
     let findUsersInRoomSpy: jest.SpyInstance;
@@ -17,8 +18,10 @@ describe('revealAllCards', () => {
 
     it('should reveal all cards successfully', async () => {
         // given
-        const body = {
+        const body: RevealAllCardsParams = {
+            type: 'revealAllCards',
             roomId: '__room_id__',
+            clientId: '__client_id__',
         };
         findUsersInRoomSpy.mockResolvedValue([
             {
@@ -47,8 +50,10 @@ describe('revealAllCards', () => {
 
     it('should not reveal cards when all users have already voted', async () => {
         // given
-        const body = {
+        const body: RevealAllCardsParams = {
+            type: 'revealAllCards',
             roomId: '__room_id__',
+            clientId: '__client_id__',
         };
         findUsersInRoomSpy.mockResolvedValue([
             {

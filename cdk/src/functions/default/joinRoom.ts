@@ -1,8 +1,9 @@
 import {planningPokerRepository} from "../../repository/PlanningPokerRepository";
+import {JoinRoomParams} from "../../types/actionParams";
 
-export const joinRoom = async (body: any, clientId: string) => {
+export const joinRoom = async (body: JoinRoomParams) => {
     await planningPokerRepository.registerUser({
-        clientId: clientId,
+        clientId: body.clientId,
         roomId: body.roomId,
         name: body.userName,
         cardNumber: "not yet",
