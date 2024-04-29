@@ -1,0 +1,24 @@
+name: Biome Apply Format and Lint
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Apply Biome Format and Lint
+        working-directory: cdk
+        run: npx @biomejs/biome check --apply .
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Apply Changes by Biome
