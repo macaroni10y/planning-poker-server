@@ -1,24 +1,28 @@
 export interface RoomActionParamsBase {
-    roomId: string
-    clientId: string;
+	roomId: string;
+	clientId: string;
 }
 
 export interface JoinRoomParams extends RoomActionParamsBase {
-    type: "joinRoom";
-    userName: string;
+	type: "joinRoom";
+	userName: string;
 }
 
 export interface SubmitCardParams extends RoomActionParamsBase {
-    type: "submitCard";
-    cardNumber: string;
+	type: "submitCard";
+	cardNumber: string;
 }
 
 export interface RevealAllCardsParams extends RoomActionParamsBase {
-    type: "revealAllCards"
+	type: "revealAllCards";
 }
 
 export interface ResetRoomParams extends RoomActionParamsBase {
-    type: "resetRoom"
+	type: "resetRoom";
 }
 
-export type ActionParams = JoinRoomParams | SubmitCardParams | RevealAllCardsParams | ResetRoomParams;
+export type ActionParams =
+	| JoinRoomParams
+	| SubmitCardParams
+	| RevealAllCardsParams
+	| ResetRoomParams;
