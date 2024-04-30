@@ -15,12 +15,13 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (
 	console.info("Received event:", JSON.stringify(event, null, 2));
 	const body = JSON.parse(event.body ?? "{}");
 	const routeKey = event.requestContext.routeKey;
+	const params: ActionParams = {
+		type: routeKey,
+		clientId: event.requestContext.connectionId,
+		...body,
+	};
 	try {
-		await route({
-			type: routeKey,
-			clientId: event.requestContext.connectionId,
-			...body,
-		});
+		await route(params);
 	} catch (e) {
 		console.error(e);
 		return {
@@ -29,10 +30,7 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (
 		};
 	}
 	const { domainName, stage } = event.requestContext;
-	await new NotificationService(`${domainName}/${stage}`).notifyCurrentUsers(
-		body.roomId,
-		"resetRoom" === routeKey,
-	);
+	await notify(params, `${domainName}/${stage}`);
 	return {
 		statusCode: 200,
 		body: `succeeded to ${routeKey}.`,
@@ -60,5 +58,38 @@ const route = async (params: ActionParams) => {
 			break;
 		default:
 			break;
+	}
+};
+
+const notify = async (params: ActionParams, endpoint: string) => {
+	const notificationService = new NotificationService(endpoint);
+	switch (params.type) {
+		case "resetTimer":
+			await notificationService.notifyTimer(params.type, params.roomId);
+			break;
+		case "pauseTimer":
+		case "resumeTimer":
+			await notificationService.notifyTimer(
+				params.type,
+				params.roomId,
+				params.time,
+			);
+			break;
+		case "joinRoom":
+			await notificationService.notifyCurrentUsers(params.roomId, false);
+			// FIXME: initialize timer with existing timer in the room
+			await notificationService.initTimer(
+				"resumeTimer",
+				params.roomId,
+				params.clientId,
+				0,
+			);
+			break;
+		case "submitCard":
+		case "revealAllCards":
+			await notificationService.notifyCurrentUsers(params.roomId, false);
+			break;
+		case "resetRoom":
+			await notificationService.notifyCurrentUsers(params.roomId, true);
 	}
 };
