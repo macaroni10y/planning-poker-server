@@ -54,7 +54,7 @@ const route = async (params: ActionParams) => {
 		case "resetTimer":
 		case "pauseTimer":
 		case "resumeTimer":
-			console.warn("TODO implement");
+			console.info(`${params.type} called but there is nothing to do now`);
 			break;
 		default:
 			break;
