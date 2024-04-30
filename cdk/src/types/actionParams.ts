@@ -21,8 +21,25 @@ export interface ResetRoomParams extends RoomActionParamsBase {
 	type: "resetRoom";
 }
 
+export interface ResetTimerParms extends RoomActionParamsBase {
+	type: "resetTimer";
+}
+
+export interface PauseTimerParams extends RoomActionParamsBase {
+	type: "pauseTimer";
+	time: number;
+}
+
+export interface ResumeTimerParams extends RoomActionParamsBase {
+	type: "resumeTimer";
+	time: number;
+}
+
 export type ActionParams =
 	| JoinRoomParams
 	| SubmitCardParams
 	| RevealAllCardsParams
-	| ResetRoomParams;
+	| ResetRoomParams
+	| ResetTimerParms
+	| PauseTimerParams
+	| ResumeTimerParams;
