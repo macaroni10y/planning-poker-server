@@ -53,6 +53,11 @@ const route = async (params: ActionParams) => {
 		case "resetRoom":
 			await resetRoom(params);
 			break;
+		case "resetTimer":
+		case "pauseTimer":
+		case "resumeTimer":
+			console.warn("TODO implement");
+			break;
 		default:
 			break;
 	}
