@@ -77,13 +77,7 @@ const notify = async (params: ActionParams, endpoint: string) => {
 			break;
 		case "joinRoom":
 			await notificationService.notifyCurrentUsers(params.roomId, false);
-			// FIXME: initialize timer with existing timer in the room
-			await notificationService.initTimer(
-				"resumeTimer",
-				params.roomId,
-				params.clientId,
-				0,
-			);
+			await notificationService.notifyTimer("resetTimer", params.roomId);
 			break;
 		case "submitCard":
 		case "revealAllCards":
