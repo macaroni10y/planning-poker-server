@@ -35,6 +35,16 @@ export interface ResumeTimerParams extends RoomActionParamsBase {
 	time: number;
 }
 
+export interface ReactionParams extends RoomActionParamsBase {
+	type: "reaction";
+	/**
+	 *  kind of reaction. no strict definition on backend
+	 *  @example "laugh", "like"...
+	 */
+	kind: string;
+	spread: boolean;
+}
+
 export type ActionParams =
 	| JoinRoomParams
 	| SubmitCardParams
@@ -42,4 +52,5 @@ export type ActionParams =
 	| ResetRoomParams
 	| ResetTimerParms
 	| PauseTimerParams
-	| ResumeTimerParams;
+	| ResumeTimerParams
+	| ReactionParams;
