@@ -17,7 +17,7 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Apply Biome Format and Lint
         working-directory: cdk
-        run: npx @biomejs/biome check --apply .
+        run: npx @biomejs/biome check --write .
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
