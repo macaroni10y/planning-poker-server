@@ -56,6 +56,9 @@ const route = async (params: ActionParams) => {
 		case "resumeTimer":
 			console.info(`${params.type} called but there is nothing to do now`);
 			break;
+		case "reaction":
+			console.info(`${params.type} called but there is nothing to do now`);
+			break;
 		default:
 			break;
 	}
@@ -73,6 +76,13 @@ const notify = async (params: ActionParams, endpoint: string) => {
 				params.type,
 				params.roomId,
 				params.time,
+			);
+			break;
+		case "reaction":
+			await notificationService.notifyReaction(
+				params.kind,
+				params.roomId,
+				params.clientId,
 			);
 			break;
 		case "joinRoom":

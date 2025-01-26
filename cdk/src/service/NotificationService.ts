@@ -70,6 +70,56 @@ export class NotificationService {
 	}
 
 	/**
+	 * notify users one's reaction
+	 * @param kind
+	 * @param roomId
+	 * @param clientId
+	 */
+	async notifyReaction(kind: string, roomId: string, clientId: string) {
+		console.info({
+			message: "notifyReaction",
+			kind,
+			roomId,
+			clientId,
+		});
+		try {
+			const users = await planningPokerRepository.findUsersInRoom(roomId);
+			console.info({
+				message: "users found",
+				users,
+			});
+			const sender = users.find((user) => user.clientId === clientId);
+			if (!sender) {
+				console.warn({
+					message: "sender not found",
+					kind,
+					roomId,
+					clientId,
+				});
+				return;
+			}
+			const promises = users.map((user) =>
+				this.apiGwManagementApi
+					.postToConnection({
+						ConnectionId: user.clientId,
+						Data: JSON.stringify({ type: "reaction", kind, from: sender.name }),
+					})
+					.promise()
+					.catch(async (error) => {
+						console.error({
+							message: `The connection is already gone, deleting ${user.clientId}`,
+							error,
+						});
+						await planningPokerRepository.deleteUser(roomId, user.clientId);
+					}),
+			);
+			await Promise.allSettled(promises);
+		} catch (e) {
+			console.error("Error sending message to connection", e);
+		}
+	}
+
+	/**
 	 * initialize timer for joined user
 	 * @param type
 	 * @param roomId

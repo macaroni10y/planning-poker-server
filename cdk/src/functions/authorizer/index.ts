@@ -1,6 +1,8 @@
 import type { APIGatewayProxyEvent } from "aws-lambda";
 
-const allowedOrigins = ["https://macaroni-poker.vercel.app"];
+const allowedOrigins = [
+	"https://macaroni-poker.vercel.app",
+];
 
 export const handler = async (event: APIGatewayProxyEvent) =>
 	generatePolicy(

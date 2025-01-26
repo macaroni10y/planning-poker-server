@@ -86,6 +86,7 @@ export class PlanningPokerServerStack extends Stack {
 			{ route: "resetTimer", func: "default" },
 			{ route: "pauseTimer", func: "default" },
 			{ route: "resumeTimer", func: "default" },
+			{ route: "reaction", func: "default" },
 			{ route: "$disconnect", func: "onDisconnect" },
 		];
 
