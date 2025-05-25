@@ -9,9 +9,9 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 		};
 	}
 	try {
-		const users = await planningPokerRepository.findUsersInRoom(
-			event.queryStringParameters.roomId,
-		);
+		const users = await planningPokerRepository.findUsersInRoom({
+			roomId: event.queryStringParameters.roomId,
+		});
 		return {
 			statusCode: 200,
 			body: JSON.stringify(users),

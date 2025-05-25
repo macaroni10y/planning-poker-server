@@ -29,7 +29,7 @@ class PlanningPokerRepository {
 		this.docClient = DynamoDBDocumentClient.from(client);
 	}
 
-	findUsersInRoom = async (roomId: string): Promise<User[]> => {
+	findUsersInRoom = async ({roomId}: {roomId: string}): Promise<User[]> => {
 		const command = new QueryCommand({
 			TableName: "PlanningPoker",
 			KeyConditionExpression: "roomId = :value",
@@ -48,7 +48,7 @@ class PlanningPokerRepository {
 		);
 	};
 
-	findUserById = async (clientId: string): Promise<User | undefined> => {
+	findUserById = async ({clientId}: {clientId: string}): Promise<User | undefined> => {
 		const command = new QueryCommand({
 			TableName: "PlanningPoker",
 			IndexName: "ClientIdIndex",
@@ -68,7 +68,7 @@ class PlanningPokerRepository {
 			: undefined;
 	};
 
-	registerUser = async (user: User): Promise<void> => {
+	registerUser = async ({user}: {user: User}): Promise<void> => {
 		const command = new PutCommand({
 			TableName: "PlanningPoker",
 			Item: {
@@ -81,7 +81,7 @@ class PlanningPokerRepository {
 		await this.docClient.send(command);
 	};
 
-	deleteUser = async (roomId: string, clientId: string): Promise<void> => {
+	deleteUser = async ({roomId, clientId}: {roomId: string, clientId: string}): Promise<void> => {
 		const command = new DeleteCommand({
 			TableName: "PlanningPoker",
 			Key: {
@@ -92,11 +92,15 @@ class PlanningPokerRepository {
 		await this.docClient.send(command);
 	};
 
-	updateCardNumberInRoomAndUser = async (
+	updateCardNumberInRoomAndUser = async ({
+		roomId,
+		clientId,
+		cardNumber,
+	}: {
 		roomId: string,
 		clientId: string,
 		cardNumber: string | null,
-	): Promise<void> => {
+	}): Promise<void> => {
 		const command = new UpdateCommand({
 			TableName: "PlanningPoker",
 			Key: {
@@ -111,18 +115,21 @@ class PlanningPokerRepository {
 		await this.docClient.send(command);
 	};
 
-	updateAllCardNumberInRoom = async (
+	updateAllCardNumberInRoom = async ({
+		roomId,
+		cardNumber,
+	}: {
 		roomId: string,
 		cardNumber: string | null,
-	): Promise<void> => {
+	}): Promise<void> => {
 		console.log(`Updating all card numbers in room ${roomId} to ${cardNumber}`);
-		const usersInRoom = await this.findUsersInRoom(roomId);
+		const usersInRoom = await this.findUsersInRoom({roomId});
 		const updatePromises = usersInRoom.map((user) =>
-			this.updateCardNumberInRoomAndUser(
-				user.roomId,
-				user.clientId,
+			this.updateCardNumberInRoomAndUser({
+				roomId: user.roomId,
+				clientId: user.clientId,
 				cardNumber,
-			),
+			}),
 		);
 		await Promise.all(updatePromises);
 	};

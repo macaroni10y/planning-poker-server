@@ -18,7 +18,7 @@ export class NotificationService {
 
 	async notifyCurrentUsers({roomId, shouldReset = false}: {roomId: string, shouldReset?: boolean}) {
 		try {
-			const users = await planningPokerRepository.findUsersInRoom(roomId);
+			const users = await planningPokerRepository.findUsersInRoom({roomId});
 			const promises = users.map((user) =>
 				this.apiGwManagementApi
 					.postToConnection({
@@ -30,7 +30,7 @@ export class NotificationService {
 							message: `The connection is already gone, deleting ${user.clientId}`,
 							error,
 						});
-						await planningPokerRepository.deleteUser(roomId, user.clientId);
+						await planningPokerRepository.deleteUser({roomId, clientId: user.clientId});
 					}),
 			);
 			await Promise.allSettled(promises);
@@ -58,7 +58,7 @@ export class NotificationService {
 		}
 	) {
 		try {
-			const users = await planningPokerRepository.findUsersInRoom(roomId);
+			const users = await planningPokerRepository.findUsersInRoom({roomId});
 			const promises = users.map((user) =>
 				this.apiGwManagementApi
 					.postToConnection({
@@ -70,7 +70,7 @@ export class NotificationService {
 							message: `The connection is already gone, deleting ${user.clientId}`,
 							error,
 						});
-						await planningPokerRepository.deleteUser(roomId, user.clientId);
+						await planningPokerRepository.deleteUser({roomId, clientId: user.clientId});
 					}),
 			);
 			await Promise.allSettled(promises);
@@ -96,7 +96,7 @@ export class NotificationService {
 			clientId,
 		});
 		try {
-			const users = await planningPokerRepository.findUsersInRoom(roomId);
+			const users = await planningPokerRepository.findUsersInRoom({roomId});
 			console.info({
 				message: "users found",
 				users,
@@ -122,7 +122,7 @@ export class NotificationService {
 							message: `The connection is already gone, deleting ${user.clientId}`,
 							error,
 						});
-						await planningPokerRepository.deleteUser(roomId, user.clientId);
+						await planningPokerRepository.deleteUser({roomId, clientId: user.clientId});
 					}),
 			);
 			await Promise.allSettled(promises);
