@@ -10,5 +10,5 @@ module.exports = async () => {
 	const samLocal = exec(
 		"sam local start-api -t cdk.out/AdminApiStack.template.json --docker-network lambda-local",
 	);
-	fs.writeFileSync("sam-local.pid", samLocal?.pid?.toString());
+	fs.writeFileSync("sam-local.pid", samLocal?.pid?.toString() || "");
 };
