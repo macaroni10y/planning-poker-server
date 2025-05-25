@@ -2,12 +2,15 @@ import type {
 	APIGatewayProxyWebsocketEventV2,
 	APIGatewayProxyWebsocketHandlerV2,
 } from "aws-lambda";
-import { notificationService, NotificationService } from "../../service/NotificationService";
 import type { ActionParams } from "../../types/actionParams";
 import { joinRoom } from "./joinRoom";
 import { resetRoom } from "./resetRoom";
 import { revealAllCards } from "./revealAllCards";
 import { submitCard } from "./submitCard";
+import { reaction } from "./reaction";
+import { resetTimer } from "./resetTimer";
+import { pauseTimer } from "./pauseTimer";
+import { resumeTimer } from "./resumeTimer";
 
 export const handler: APIGatewayProxyWebsocketHandlerV2 = async (
 	event: APIGatewayProxyWebsocketEventV2,
@@ -29,7 +32,6 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (
 			body: `Cannot ${routeKey}.`,
 		};
 	}
-	await notify(params);
 	return {
 		statusCode: 200,
 		body: `succeeded to ${routeKey}.`,
@@ -51,47 +53,18 @@ const route = async (params: ActionParams) => {
 			await resetRoom(params);
 			break;
 		case "resetTimer":
+			await resetTimer(params);
+			break;
 		case "pauseTimer":
+			await pauseTimer(params)
+			break;
 		case "resumeTimer":
-			console.info(`${params.type} called but there is nothing to do now`);
+			await resumeTimer(params);
 			break;
 		case "reaction":
-			console.info(`${params.type} called but there is nothing to do now`);
+			await reaction(params);
 			break;
 		default:
 			break;
-	}
-};
-
-const notify = async (params: ActionParams) => {
-	switch (params.type) {
-		case "resetTimer":
-			await notificationService.notifyTimer(params.type, params.roomId);
-			break;
-		case "pauseTimer":
-		case "resumeTimer":
-			await notificationService.notifyTimer(
-				params.type,
-				params.roomId,
-				params.time,
-			);
-			break;
-		case "reaction":
-			await notificationService.notifyReaction(
-				params.kind,
-				params.roomId,
-				params.clientId,
-			);
-			break;
-		case "joinRoom":
-			await notificationService.notifyCurrentUsers(params.roomId, false);
-			await notificationService.notifyTimer("resetTimer", params.roomId);
-			break;
-		case "submitCard":
-		case "revealAllCards":
-			await notificationService.notifyCurrentUsers(params.roomId, false);
-			break;
-		case "resetRoom":
-			await notificationService.notifyCurrentUsers(params.roomId, true);
 	}
 };

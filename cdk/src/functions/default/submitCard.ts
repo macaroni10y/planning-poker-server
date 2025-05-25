@@ -1,9 +1,12 @@
 import { planningPokerRepository } from "../../repository/PlanningPokerRepository";
+import { notificationService } from "../../service/NotificationService";
 import type { SubmitCardParams } from "../../types/actionParams";
 
-export const submitCard = async (body: SubmitCardParams) =>
-	await planningPokerRepository.updateCardNumberInRoomAndUser(
-		body.roomId,
-		body.clientId,
-		body.cardNumber,
-	);
+export const submitCard = async (body: SubmitCardParams) => {
+		await planningPokerRepository.updateCardNumberInRoomAndUser(
+			body.roomId,
+			body.clientId,
+			body.cardNumber
+		);
+		await notificationService.notifyCurrentUsers(body.roomId, false);
+	};

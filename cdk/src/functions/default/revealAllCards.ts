@@ -1,4 +1,5 @@
 import { planningPokerRepository } from "../../repository/PlanningPokerRepository";
+import { notificationService } from "../../service/NotificationService";
 import type { RevealAllCardsParams } from "../../types/actionParams";
 
 /**
@@ -17,4 +18,5 @@ export const revealAllCards = async (body: RevealAllCardsParams) => {
 			),
 		);
 	await Promise.all(updatePromises);
+	await notificationService.notifyCurrentUsers(body.roomId, false);
 };
