@@ -1,4 +1,3 @@
-
 import { ApiGatewayManagementApi } from "@aws-sdk/client-apigatewaymanagementapi";
 import { planningPokerRepository } from "../repository/PlanningPokerRepository";
 
