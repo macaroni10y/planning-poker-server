@@ -1,4 +1,4 @@
-import { ApiGatewayManagementApi } from "aws-sdk";
+import { ApiGatewayManagementApi } from "@aws-sdk/client-apigatewaymanagementapi";
 import { planningPokerRepository } from "../repository/PlanningPokerRepository";
 
 export class NotificationService {
@@ -20,7 +20,6 @@ export class NotificationService {
 						ConnectionId: user.clientId,
 						Data: JSON.stringify({ type: "updateCard", shouldReset, users }),
 					})
-					.promise()
 					.catch(async (error) => {
 						console.error({
 							message: `The connection is already gone, deleting ${user.clientId}`,
@@ -54,7 +53,6 @@ export class NotificationService {
 						ConnectionId: user.clientId,
 						Data: JSON.stringify({ type, time }),
 					})
-					.promise()
 					.catch(async (error) => {
 						console.error({
 							message: `The connection is already gone, deleting ${user.clientId}`,
@@ -104,7 +102,6 @@ export class NotificationService {
 						ConnectionId: user.clientId,
 						Data: JSON.stringify({ type: "reaction", kind, from: sender.name }),
 					})
-					.promise()
 					.catch(async (error) => {
 						console.error({
 							message: `The connection is already gone, deleting ${user.clientId}`,
@@ -138,7 +135,6 @@ export class NotificationService {
 					ConnectionId: clientId,
 					Data: JSON.stringify({ type, time }),
 				})
-				.promise()
 				.catch(async (error) => {
 					console.error({
 						message: `The connection is already gone, deleting ${clientId}`,
