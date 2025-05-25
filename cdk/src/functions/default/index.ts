@@ -2,7 +2,7 @@ import type {
 	APIGatewayProxyWebsocketEventV2,
 	APIGatewayProxyWebsocketHandlerV2,
 } from "aws-lambda";
-import { NotificationService } from "../../service/NotificationService";
+import { notificationService, NotificationService } from "../../service/NotificationService";
 import type { ActionParams } from "../../types/actionParams";
 import { joinRoom } from "./joinRoom";
 import { resetRoom } from "./resetRoom";
@@ -29,8 +29,7 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (
 			body: `Cannot ${routeKey}.`,
 		};
 	}
-	const { domainName, stage } = event.requestContext;
-	await notify(params, `${domainName}/${stage}`);
+	await notify(params);
 	return {
 		statusCode: 200,
 		body: `succeeded to ${routeKey}.`,
@@ -64,8 +63,7 @@ const route = async (params: ActionParams) => {
 	}
 };
 
-const notify = async (params: ActionParams, endpoint: string) => {
-	const notificationService = new NotificationService(endpoint);
+const notify = async (params: ActionParams) => {
 	switch (params.type) {
 		case "resetTimer":
 			await notificationService.notifyTimer(params.type, params.roomId);

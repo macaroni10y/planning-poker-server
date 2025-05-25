@@ -1,13 +1,18 @@
 import { ApiGatewayManagementApi } from "@aws-sdk/client-apigatewaymanagementapi";
 import { planningPokerRepository } from "../repository/PlanningPokerRepository";
 
+const MANAGEMENT_ENDPOINT = process.env.MANAGEMENT_ENDPOINT;
+if (!MANAGEMENT_ENDPOINT) {
+	throw new Error("WS_ENDPOINT environment variable is not set");
+}
+
 export class NotificationService {
 	private apiGwManagementApi: ApiGatewayManagementApi;
 
-	constructor(endpoint: string) {
+	constructor() {
 		this.apiGwManagementApi = new ApiGatewayManagementApi({
 			apiVersion: "2018-11-29",
-			endpoint: `https://${endpoint}`,
+			endpoint: MANAGEMENT_ENDPOINT,
 		});
 	}
 
@@ -147,3 +152,5 @@ export class NotificationService {
 		}
 	}
 }
+
+export const notificationService = new NotificationService();

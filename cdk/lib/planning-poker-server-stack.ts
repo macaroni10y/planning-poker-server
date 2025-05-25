@@ -36,6 +36,9 @@ export class PlanningPokerServerStack extends Stack {
 		new NodejsFunction(this, name, {
 			entry: path.join(__dirname, `../src/functions/${name}/index.ts`),
 			functionName: name,
+			environment: {
+				MANAGEMENT_ENDPOINT: "https://sjy1ekd1t6.execute-api.ap-northeast-1.amazonaws.com/v1",
+			},
 		});
 
 	private createLambdaFunctions(
