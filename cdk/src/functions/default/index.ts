@@ -3,14 +3,14 @@ import type {
 	APIGatewayProxyWebsocketHandlerV2,
 } from "aws-lambda";
 import type { ActionParams } from "../../types/actionParams";
-import { joinRoom } from "./joinRoom";
-import { resetRoom } from "./resetRoom";
-import { revealAllCards } from "./revealAllCards";
-import { submitCard } from "./submitCard";
-import { reaction } from "./reaction";
-import { resetTimer } from "./resetTimer";
-import { pauseTimer } from "./pauseTimer";
-import { resumeTimer } from "./resumeTimer";
+import { joinRoomUsecase } from "../../usecase/joinRoomUsecase";
+import { resetRoomUsecase } from "../../usecase/resetRoomUsecase";
+import { revealAllCardsUsecase } from "../../usecase/revealAllCardsUsecase";
+import { submitCardUsecase } from "../../usecase/submitCardUsecase";
+import { reactionUsecase } from "../../usecase/reactionUsecase";
+import { resetTimerUsecase } from "../../usecase/resetTimerUsecase";
+import { pauseTimerUsecase } from "../../usecase/pauseTimerUsecase";
+import { resumeTimerUsecase } from "../../usecase/resumeTimerUsecase";
 
 export const handler: APIGatewayProxyWebsocketHandlerV2 = async (
 	event: APIGatewayProxyWebsocketEventV2,
@@ -41,28 +41,28 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (
 const route = async (params: ActionParams) => {
 	switch (params.type) {
 		case "joinRoom":
-			await joinRoom(params);
+			await joinRoomUsecase(params);
 			break;
 		case "submitCard":
-			await submitCard(params);
+			await submitCardUsecase(params);
 			break;
 		case "revealAllCards":
-			await revealAllCards(params);
+			await revealAllCardsUsecase(params);
 			break;
 		case "resetRoom":
-			await resetRoom(params);
+			await resetRoomUsecase(params);
 			break;
 		case "resetTimer":
-			await resetTimer(params);
+			await resetTimerUsecase(params);
 			break;
 		case "pauseTimer":
-			await pauseTimer(params)
+			await pauseTimerUsecase(params)
 			break;
 		case "resumeTimer":
-			await resumeTimer(params);
+			await resumeTimerUsecase(params);
 			break;
 		case "reaction":
-			await reaction(params);
+			await reactionUsecase(params);
 			break;
 		default:
 			break;
