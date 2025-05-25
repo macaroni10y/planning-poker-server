@@ -1,10 +1,10 @@
 import { notificationService } from "../service/NotificationService";
-import { ReactionParams } from "../types/actionParams";
+import type { ReactionParams } from "../types/actionParams";
 
 export const reactionUsecase = async (body: ReactionParams) => {
-    await notificationService.notifyReaction(
-				{kind: body.kind,
-				roomId: body.roomId,
-				clientId: body.clientId,}
-			);
-}
+    await notificationService.notifyReaction({
+        kind: body.kind,
+        roomId: body.roomId,
+        clientId: body.clientId,
+    });
+};
