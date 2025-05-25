@@ -3,8 +3,8 @@ import { PauseTimerParams } from "../types/actionParams";
 
 export const pauseTimerUsecase = async (body: PauseTimerParams) => {
     await notificationService.notifyTimer(
-                    body.type,
-                    body.roomId,
-                    body.time,
+                    {type: body.type,
+                    roomId: body.roomId,
+                    time: body.time,}
                 );
 }

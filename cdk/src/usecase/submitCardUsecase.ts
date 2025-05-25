@@ -8,5 +8,5 @@ export const submitCardUsecase = async (body: SubmitCardParams) => {
 			body.clientId,
 			body.cardNumber
 		);
-		await notificationService.notifyCurrentUsers(body.roomId, false);
+		await notificationService.notifyCurrentUsers({roomId: body.roomId});
 	};

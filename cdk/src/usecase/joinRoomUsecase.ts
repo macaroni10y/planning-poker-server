@@ -9,6 +9,6 @@ export const joinRoomUsecase = async (body: JoinRoomParams) => {
 		name: body.userName,
 		cardNumber: "not yet",
 	});
-	await notificationService.notifyCurrentUsers(body.roomId, false);
-	await notificationService.notifyTimer("resetTimer", body.roomId);
+	await notificationService.notifyCurrentUsers({roomId: body.roomId});
+	await notificationService.notifyTimer({type: "resetTimer", roomId: body.roomId});
 };

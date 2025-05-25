@@ -18,5 +18,5 @@ export const revealAllCardsUsecase = async (body: RevealAllCardsParams) => {
 			),
 		);
 	await Promise.all(updatePromises);
-	await notificationService.notifyCurrentUsers(body.roomId, false);
+	await notificationService.notifyCurrentUsers({roomId: body.roomId});
 };

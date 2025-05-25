@@ -3,8 +3,8 @@ import { ReactionParams } from "../types/actionParams";
 
 export const reactionUsecase = async (body: ReactionParams) => {
     await notificationService.notifyReaction(
-				body.kind,
-				body.roomId,
-				body.clientId,
+				{kind: body.kind,
+				roomId: body.roomId,
+				clientId: body.clientId,}
 			);
 }

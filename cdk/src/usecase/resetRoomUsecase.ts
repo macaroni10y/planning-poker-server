@@ -7,5 +7,5 @@ export const resetRoomUsecase = async (body: ResetRoomParams) => {
 			body.roomId,
 			"not yet"
 		);
-		await notificationService.notifyCurrentUsers(body.roomId, true);
+		await notificationService.notifyCurrentUsers({roomId: body.roomId, shouldReset: true});
 	};

@@ -16,7 +16,7 @@ export class NotificationService {
 		});
 	}
 
-	async notifyCurrentUsers(roomId: string, shouldReset = false) {
+	async notifyCurrentUsers({roomId, shouldReset = false}: {roomId: string, shouldReset?: boolean}) {
 		try {
 			const users = await planningPokerRepository.findUsersInRoom(roomId);
 			const promises = users.map((user) =>
@@ -46,9 +46,16 @@ export class NotificationService {
 	 * @param time
 	 */
 	async notifyTimer(
-		type: "resetTimer" | "pauseTimer" | "resumeTimer",
-		roomId: string,
-		time?: number,
+		{
+		type,
+		roomId,
+		time = 0
+	}: 
+		{
+			type: "resetTimer" | "pauseTimer" | "resumeTimer",
+			roomId: string,
+			time?: number
+		}
 	) {
 		try {
 			const users = await planningPokerRepository.findUsersInRoom(roomId);
@@ -78,7 +85,10 @@ export class NotificationService {
 	 * @param roomId
 	 * @param clientId
 	 */
-	async notifyReaction(kind: string, roomId: string, clientId: string) {
+	async notifyReaction(
+		{kind, roomId, clientId}:
+		{kind: string, roomId: string, clientId: string}
+	) {
 		console.info({
 			message: "notifyReaction",
 			kind,
@@ -116,37 +126,6 @@ export class NotificationService {
 					}),
 			);
 			await Promise.allSettled(promises);
-		} catch (e) {
-			console.error("Error sending message to connection", e);
-		}
-	}
-
-	/**
-	 * initialize timer for joined user
-	 * @param type
-	 * @param roomId
-	 * @param clientId
-	 * @param time
-	 */
-	async initTimer(
-		type: "resumeTimer",
-		roomId: string,
-		clientId: string,
-		time?: number,
-	) {
-		try {
-			await this.apiGwManagementApi
-				.postToConnection({
-					ConnectionId: clientId,
-					Data: JSON.stringify({ type, time }),
-				})
-				.catch(async (error) => {
-					console.error({
-						message: `The connection is already gone, deleting ${clientId}`,
-						error,
-					});
-					await planningPokerRepository.deleteUser(roomId, clientId);
-				});
 		} catch (e) {
 			console.error("Error sending message to connection", e);
 		}

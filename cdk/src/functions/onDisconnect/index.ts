@@ -13,7 +13,7 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
 				found.roomId,
 				event.requestContext.connectionId,
 			);
-			await notificationService.notifyCurrentUsers(found.roomId);
+			await notificationService.notifyCurrentUsers({roomId: found.roomId});
 		}
 	} catch (e) {
 		console.error(e);
