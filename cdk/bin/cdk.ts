@@ -6,9 +6,9 @@ import { PlanningPokerServerStack } from "../lib/planning-poker-server-stack";
 
 const app = new cdk.App();
 const planningPokerServerStack = new PlanningPokerServerStack(
-	app,
-	"PlanningPokerServerStack",
+    app,
+    "PlanningPokerServerStack",
 );
 new AdminApiStack(app, "AdminApiStack", {
-	table: planningPokerServerStack.table,
+    table: planningPokerServerStack.table,
 });
