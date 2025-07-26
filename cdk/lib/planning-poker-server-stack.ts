@@ -4,9 +4,9 @@ import { WebSocketApi, WebSocketStage } from "aws-cdk-lib/aws-apigatewayv2";
 import { WebSocketLambdaAuthorizer } from "aws-cdk-lib/aws-apigatewayv2-authorizers";
 import { WebSocketLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import { AttributeType, BillingMode, Table } from "aws-cdk-lib/aws-dynamodb";
+import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import type { Construct } from "constructs";
-import { Runtime } from "aws-cdk-lib/aws-lambda";
 
 export class PlanningPokerServerStack extends Stack {
     public readonly table: Table;

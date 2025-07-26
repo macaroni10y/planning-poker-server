@@ -2,9 +2,9 @@ import * as path from "node:path";
 import { Stack, type StackProps } from "aws-cdk-lib";
 import { LambdaIntegration, RestApi } from "aws-cdk-lib/aws-apigateway";
 import type { Table } from "aws-cdk-lib/aws-dynamodb";
+import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import type { Construct } from "constructs";
-import { Runtime } from "aws-cdk-lib/aws-lambda";
 
 interface Props extends StackProps {
     table: Table;
