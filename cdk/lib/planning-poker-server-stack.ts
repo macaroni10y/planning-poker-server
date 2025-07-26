@@ -4,6 +4,7 @@ import { WebSocketApi, WebSocketStage } from "aws-cdk-lib/aws-apigatewayv2";
 import { WebSocketLambdaAuthorizer } from "aws-cdk-lib/aws-apigatewayv2-authorizers";
 import { WebSocketLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import { AttributeType, BillingMode, Table } from "aws-cdk-lib/aws-dynamodb";
+import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import type { Construct } from "constructs";
 
@@ -36,6 +37,7 @@ export class PlanningPokerServerStack extends Stack {
         new NodejsFunction(this, name, {
             entry: path.join(__dirname, `../src/functions/${name}/index.ts`),
             functionName: name,
+            runtime: Runtime.NODEJS_22_X,
             environment: {
                 MANAGEMENT_ENDPOINT:
                     "https://sjy1ekd1t6.execute-api.ap-northeast-1.amazonaws.com/v1",
@@ -66,6 +68,7 @@ export class PlanningPokerServerStack extends Stack {
                     "../src/functions/authorizer/index.ts",
                 ),
                 functionName: "authorizer",
+                runtime: Runtime.NODEJS_22_X,
             },
         );
         const authorizer = new WebSocketLambdaAuthorizer(
