@@ -31,7 +31,9 @@ class PlanningPokerRepository {
 
     findUsersInRoom = async ({
         roomId,
-    }: { roomId: string }): Promise<User[]> => {
+    }: {
+        roomId: string;
+    }): Promise<User[]> => {
         const command = new QueryCommand({
             TableName: "PlanningPoker",
             KeyConditionExpression: "roomId = :value",
@@ -52,7 +54,9 @@ class PlanningPokerRepository {
 
     findUserById = async ({
         clientId,
-    }: { clientId: string }): Promise<User | undefined> => {
+    }: {
+        clientId: string;
+    }): Promise<User | undefined> => {
         const command = new QueryCommand({
             TableName: "PlanningPoker",
             IndexName: "ClientIdIndex",
@@ -88,7 +92,10 @@ class PlanningPokerRepository {
     deleteUser = async ({
         roomId,
         clientId,
-    }: { roomId: string; clientId: string }): Promise<void> => {
+    }: {
+        roomId: string;
+        clientId: string;
+    }): Promise<void> => {
         const command = new DeleteCommand({
             TableName: "PlanningPoker",
             Key: {

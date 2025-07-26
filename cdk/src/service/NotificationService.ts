@@ -19,7 +19,10 @@ export class NotificationService {
     async notifyCurrentUsers({
         roomId,
         shouldReset = false,
-    }: { roomId: string; shouldReset?: boolean }) {
+    }: {
+        roomId: string;
+        shouldReset?: boolean;
+    }) {
         try {
             const users = await planningPokerRepository.findUsersInRoom({
                 roomId,
@@ -103,7 +106,11 @@ export class NotificationService {
         kind,
         roomId,
         clientId,
-    }: { kind: string; roomId: string; clientId: string }) {
+    }: {
+        kind: string;
+        roomId: string;
+        clientId: string;
+    }) {
         console.info({
             message: "notifyReaction",
             kind,

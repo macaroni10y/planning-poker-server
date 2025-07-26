@@ -1,8 +1,6 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-    "organizeImports": {
-        "enabled": true
-    },
+    "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+    "assist": { "actions": { "source": { "organizeImports": "on" } } },
     "vcs": {
         "clientKind": "git",
         "enabled": true,
@@ -20,6 +18,6 @@
         "indentWidth": 4
     },
     "files": {
-        "ignore": ["cdk.out", "node_modules"]
+        "includes": ["**", "!**/cdk.out", "!**/node_modules"]
     }
 }

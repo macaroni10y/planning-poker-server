@@ -4,6 +4,7 @@ import { LambdaIntegration, RestApi } from "aws-cdk-lib/aws-apigateway";
 import type { Table } from "aws-cdk-lib/aws-dynamodb";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import type { Construct } from "constructs";
+import { Runtime } from "aws-cdk-lib/aws-lambda";
 
 interface Props extends StackProps {
     table: Table;
@@ -14,6 +15,7 @@ export class AdminApiStack extends Stack {
         super(scope, id, props);
         const lambda = new NodejsFunction(this, "AdminApiHandler", {
             entry: path.join(__dirname, "../src/functions/admin-api/index.ts"),
+            runtime: Runtime.NODEJS_22_X,
         });
 
         const api = new RestApi(this, "AdminApi", {
