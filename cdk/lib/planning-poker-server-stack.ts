@@ -69,13 +69,16 @@ export class PlanningPokerServerStack extends Stack {
                 ),
                 functionName: "authorizer",
                 runtime: Runtime.NODEJS_22_X,
+                environment: {
+                    JWKS_URL: process.env.SUPABASE_JWKS_URL ?? "",
+                },
             },
         );
         const authorizer = new WebSocketLambdaAuthorizer(
             "Authorizer",
             authorizerFunction,
             {
-                identitySource: ["route.request.header.Origin"],
+                identitySource: ["route.request.querystring.token"],
             },
         );
         const api = new WebSocketApi(this, "api", {

@@ -1,27 +1,40 @@
-import type { APIGatewayProxyEvent } from "aws-lambda";
+import type { APIGatewayAuthorizerResult } from "aws-lambda";
+import { verifyToken } from "./jwtVerifier";
+import { generatePolicy } from "./policyGenerator";
+import type { WebSocketAuthorizerEvent } from "./types";
 
-const allowedOrigins = ["https://macaroni-poker.vercel.app"];
+export const handler = async (
+    event: WebSocketAuthorizerEvent,
+): Promise<APIGatewayAuthorizerResult> => {
+    console.info({
+        message: "Authorizer invoked",
+        connectionId: event.requestContext.connectionId,
+    });
 
-export const handler = async (event: APIGatewayProxyEvent) =>
-    generatePolicy(
-        event.requestContext.connectionId,
-        allowedOrigins.includes(event.headers.Origin || ""),
-    );
+    try {
+        const token = event.queryStringParameters?.token;
 
-const generatePolicy = (
-    principalId: string | undefined,
-    isAllowed: boolean,
-) => ({
-    principalId: principalId,
-    policyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-            {
-                Action: "execute-api:Invoke",
-                Effect: isAllowed ? "Allow" : "Deny",
-                Resource:
-                    "arn:aws:execute-api:ap-northeast-1:417866577833:sjy1ekd1t6/*/*",
-            },
-        ],
-    },
-});
+        if (!token) {
+            console.warn({
+                message: "No token provided in query parameters",
+            });
+            return generatePolicy(event.requestContext.connectionId, false);
+        }
+
+        const payload = await verifyToken(token);
+
+        console.info({
+            message: "Token verified successfully",
+            sub: payload.sub,
+            exp: payload.exp,
+        });
+
+        return generatePolicy(event.requestContext.connectionId, true, payload);
+    } catch (error) {
+        console.error({
+            message: "Token verification failed",
+            error: error instanceof Error ? error.message : "Unknown error",
+        });
+        return generatePolicy(event.requestContext.connectionId, false);
+    }
+};
