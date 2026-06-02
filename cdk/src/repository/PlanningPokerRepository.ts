@@ -11,8 +11,22 @@ interface User {
     roomId: string;
     clientId: string;
     name: string;
-    cardNumber: string | null;
+    cardNumber: string | number | null;
 }
+
+const toUser = (item: Record<string, unknown>): User => {
+    if (typeof item.roomId !== "string") throw new Error(`Invalid roomId: ${item.roomId}`);
+    if (typeof item.clientId !== "string") throw new Error(`Invalid clientId: ${item.clientId}`);
+    if (typeof item.userName !== "string") throw new Error(`Invalid userName: ${item.userName}`);
+    if (item.cardNumber !== null && typeof item.cardNumber !== "string" && typeof item.cardNumber !== "number")
+        throw new Error(`Invalid cardNumber: ${item.cardNumber}`);
+    return {
+        roomId: item.roomId,
+        clientId: item.clientId,
+        name: item.userName,
+        cardNumber: item.cardNumber,
+    };
+};
 
 class PlanningPokerRepository {
     private docClient: DynamoDBDocumentClient;
@@ -42,14 +56,7 @@ class PlanningPokerRepository {
             },
         });
         const output = await this.docClient.send(command);
-        return (
-            output.Items?.map((item) => ({
-                roomId: item.roomId,
-                clientId: item.clientId,
-                name: item.userName,
-                cardNumber: item.cardNumber,
-            })) ?? []
-        );
+        return output.Items?.map(toUser) ?? [];
     };
 
     findUserById = async ({
@@ -66,14 +73,7 @@ class PlanningPokerRepository {
             },
         });
         const output = await this.docClient.send(command);
-        return output.Items && output.Items.length !== 0
-            ? {
-                  roomId: output.Items[0].roomId,
-                  clientId: output.Items[0].clientId,
-                  name: output.Items[0].userName,
-                  cardNumber: output.Items[0].cardNumber,
-              }
-            : undefined;
+        return output.Items?.[0] ? toUser(output.Items[0]) : undefined;
     };
 
     registerUser = async ({ user }: { user: User }): Promise<void> => {

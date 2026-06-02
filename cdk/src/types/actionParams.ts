@@ -54,3 +54,24 @@ export type ActionParams =
     | PauseTimerParams
     | ResumeTimerParams
     | ReactionParams;
+
+export type ActionType = ActionParams["type"];
+
+const ACTION_TYPES = [
+    "joinRoom",
+    "submitCard",
+    "revealAllCards",
+    "resetRoom",
+    "resetTimer",
+    "pauseTimer",
+    "resumeTimer",
+    "reaction",
+] as const;
+
+type _ExhaustiveCheck = ActionType extends (typeof ACTION_TYPES)[number]
+    ? true
+    : never;
+
+export function isActionType(s: string): s is ActionType {
+    return (ACTION_TYPES as readonly string[]).includes(s);
+}
