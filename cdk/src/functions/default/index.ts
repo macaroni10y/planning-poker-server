@@ -2,6 +2,7 @@ import type {
     APIGatewayProxyWebsocketEventV2,
     APIGatewayProxyWebsocketHandlerV2,
 } from "aws-lambda";
+import { isActionType } from "../../types/actionParams";
 import type { ActionParams } from "../../types/actionParams";
 import { joinRoomUsecase } from "../../usecase/joinRoomUsecase";
 import { pauseTimerUsecase } from "../../usecase/pauseTimerUsecase";
@@ -18,6 +19,9 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (
     console.info("Received event:", JSON.stringify(event, null, 2));
     const body = JSON.parse(event.body ?? "{}");
     const routeKey = event.requestContext.routeKey;
+    if (!isActionType(routeKey)) {
+        return { statusCode: 400, body: `Unknown route: ${routeKey}` };
+    }
     const params: ActionParams = {
         type: routeKey,
         clientId: event.requestContext.connectionId,
