@@ -15,10 +15,17 @@ interface User {
 }
 
 const toUser = (item: Record<string, unknown>): User => {
-    if (typeof item.roomId !== "string") throw new Error(`Invalid roomId: ${item.roomId}`);
-    if (typeof item.clientId !== "string") throw new Error(`Invalid clientId: ${item.clientId}`);
-    if (typeof item.userName !== "string") throw new Error(`Invalid userName: ${item.userName}`);
-    if (item.cardNumber !== null && typeof item.cardNumber !== "string" && typeof item.cardNumber !== "number")
+    if (typeof item.roomId !== "string")
+        throw new Error(`Invalid roomId: ${item.roomId}`);
+    if (typeof item.clientId !== "string")
+        throw new Error(`Invalid clientId: ${item.clientId}`);
+    if (typeof item.userName !== "string")
+        throw new Error(`Invalid userName: ${item.userName}`);
+    if (
+        item.cardNumber !== null &&
+        typeof item.cardNumber !== "string" &&
+        typeof item.cardNumber !== "number"
+    )
         throw new Error(`Invalid cardNumber: ${item.cardNumber}`);
     return {
         roomId: item.roomId,
