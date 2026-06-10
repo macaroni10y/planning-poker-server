@@ -1,6 +1,7 @@
 export interface RoomActionParamsBase {
     roomId: string;
     clientId: string;
+    connectionId: string;
 }
 
 export interface JoinRoomParams extends RoomActionParamsBase {

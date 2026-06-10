@@ -30,7 +30,7 @@ export class NotificationService {
             const promises = users.map((user) =>
                 this.apiGwManagementApi
                     .postToConnection({
-                        ConnectionId: user.clientId,
+                        ConnectionId: user.connectionId,
                         Data: JSON.stringify({
                             type: "updateCard",
                             shouldReset,
@@ -76,7 +76,7 @@ export class NotificationService {
             const promises = users.map((user) =>
                 this.apiGwManagementApi
                     .postToConnection({
-                        ConnectionId: user.clientId,
+                        ConnectionId: user.connectionId,
                         Data: JSON.stringify({ type, time }),
                     })
                     .catch(async (error) => {
@@ -138,7 +138,7 @@ export class NotificationService {
             const promises = users.map((user) =>
                 this.apiGwManagementApi
                     .postToConnection({
-                        ConnectionId: user.clientId,
+                        ConnectionId: user.connectionId,
                         Data: JSON.stringify({
                             type: "reaction",
                             kind,

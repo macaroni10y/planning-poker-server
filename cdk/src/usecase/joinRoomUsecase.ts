@@ -6,6 +6,7 @@ export const joinRoomUsecase = async (body: JoinRoomParams) => {
     await planningPokerRepository.registerUser({
         user: {
             clientId: body.clientId,
+            connectionId: body.connectionId,
             roomId: body.roomId,
             name: body.userName,
             cardNumber: "not yet",
