@@ -10,6 +10,7 @@ import {
 interface User {
     roomId: string;
     clientId: string;
+    connectionId: string;
     name: string;
     cardNumber: string | number | null;
 }
@@ -17,12 +18,14 @@ interface User {
 const toUser = (item: Record<string, unknown>): User => {
     if (typeof item.roomId !== "string") throw new Error(`Invalid roomId: ${item.roomId}`);
     if (typeof item.clientId !== "string") throw new Error(`Invalid clientId: ${item.clientId}`);
+    if (typeof item.connectionId !== "string") throw new Error(`Invalid connectionId: ${item.connectionId}`);
     if (typeof item.userName !== "string") throw new Error(`Invalid userName: ${item.userName}`);
     if (item.cardNumber !== null && typeof item.cardNumber !== "string" && typeof item.cardNumber !== "number")
         throw new Error(`Invalid cardNumber: ${item.cardNumber}`);
     return {
         roomId: item.roomId,
         clientId: item.clientId,
+        connectionId: item.connectionId,
         name: item.userName,
         cardNumber: item.cardNumber,
     };
@@ -59,7 +62,7 @@ class PlanningPokerRepository {
         return output.Items?.map(toUser) ?? [];
     };
 
-    findUserById = async ({
+    findUserByClientId = async ({
         clientId,
     }: {
         clientId: string;
@@ -82,6 +85,7 @@ class PlanningPokerRepository {
             Item: {
                 roomId: user.roomId,
                 clientId: user.clientId,
+                connectionId: user.connectionId,
                 userName: user.name,
                 cardNumber: user.cardNumber ? user.cardNumber : "not yet",
             },

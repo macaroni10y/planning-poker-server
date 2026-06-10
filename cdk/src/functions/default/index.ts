@@ -22,9 +22,17 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (
     if (!isActionType(routeKey)) {
         return { statusCode: 400, body: `Unknown route: ${routeKey}` };
     }
+    const ctx = event.requestContext as typeof event.requestContext & {
+        authorizer?: { userId: string };
+    };
+    const clientId = ctx.authorizer?.userId;
+    if (!clientId) {
+        return { statusCode: 400, body: "no authorizer context, skipping." };
+    }
     const params: ActionParams = {
         type: routeKey,
-        clientId: event.requestContext.connectionId,
+        clientId,
+        connectionId: event.requestContext.connectionId,
         ...body,
     };
     try {
